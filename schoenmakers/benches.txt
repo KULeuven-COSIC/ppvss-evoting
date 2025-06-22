@@ -1,0 +1,32 @@
+(n: 64, t: 31) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [1.2903 ms 1.2989 ms 1.3109 ms]
+(n: 64, t: 31) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [8.2542 ms 8.3069 ms 8.3820 ms]
+
+(n: 128, t: 63) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [2.3927 ms 2.3985 ms 2.4058 ms]
+(n: 128, t: 63) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [31.532 ms 31.608 ms 31.687 ms]
+
+(n: 256, t: 127) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [4.8583 ms 4.8727 ms 4.8873 ms]
+(n: 256, t: 127) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [122.95 ms 123.58 ms 124.33 ms]
+
+(n: 512, t: 255) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [10.380 ms 10.517 ms 10.736 ms]
+(n: 512, t: 255) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [480.51 ms 482.70 ms 485.02 ms]
+
+(n: 1024, t: 511) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [24.554 ms 24.736 ms 25.011 ms]
+(n: 1024, t: 511) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [1.9088 s 1.9154 s 1.9223 s]
+
+(n: 2048, t: 1023) | Sch PPVSS | Sch PPVSS | Dealer: Deal Secret
+                        time:   [64.567 ms 65.219 ms 66.224 ms]
+(n: 2048, t: 1023) | Sch PPVSS | Party: Verify Encrypted Shares
+                        time:   [7.6811 s 7.7251 s 7.7729 s]
+
+
+

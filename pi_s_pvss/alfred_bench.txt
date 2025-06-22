@@ -1,0 +1,99 @@
+(n: 33, t: 16) | Dealer: Deal Secret
+                        time:   [1.6592 ms 1.6641 ms 1.6694 ms]
+
+(n: 33, t: 16) | Party: Verify Encrypted Shares
+                        time:   [1.4697 ms 1.4779 ms 1.4865 ms]
+
+(n: 33, t: 16) | Party: Decrypt Share
+                        time:   [25.137 µs 25.274 µs 25.449 µs]
+
+(n: 33, t: 16) | Party: Generate Proof
+                        time:   [31.939 µs 32.189 µs 32.506 µs]
+
+(n: 33, t: 16) | Party: Verify Decrypted Shares
+                        time:   [792.10 µs 803.87 µs 816.64 µs]
+
+(n: 33, t: 16) | Party: Reconstruct Secret
+                        time:   [618.71 µs 620.24 µs 621.91 µs]
+
+(n: 128, t: 63) | Dealer: Deal Secret
+                        time:   [3.3054 ms 3.3254 ms 3.3462 ms]
+
+(n: 128, t: 63) | Party: Verify Encrypted Shares
+                        time:   [2.1564 ms 2.1664 ms 2.1771 ms]
+
+(n: 128, t: 63) | Party: Decrypt Share
+                        time:   [25.099 µs 25.192 µs 25.313 µs]
+
+(n: 128, t: 63) | Party: Generate Proof
+                        time:   [31.888 µs 32.145 µs 32.481 µs]
+
+(n: 128, t: 63) | Party: Verify Decrypted Shares
+                        time:   [1.8819 ms 1.9238 ms 1.9600 ms]
+
+(n: 128, t: 63) | Party: Reconstruct Secret
+                        time:   [803.34 µs 807.74 µs 812.27 µs]
+
+(n: 512, t: 255) | Dealer: Deal Secret
+                        time:   [8.9004 ms 8.9484 ms 8.9970 ms]
+
+(n: 512, t: 255) | Party: Verify Encrypted Shares
+                        time:   [6.4946 ms 6.5176 ms 6.5431 ms]
+
+(n: 512, t: 255) | Party: Decrypt Share
+                        time:   [25.286 µs 25.497 µs 25.745 µs]
+
+(n: 512, t: 255) | Party: Generate Proof
+                        time:   [31.995 µs 32.249 µs 32.560 µs]
+
+(n: 512, t: 255) | Party: Verify Decrypted Shares
+                        time:   [5.9283 ms 5.9939 ms 6.0503 ms]
+
+(n: 512, t: 255) | Party: Reconstruct Secret
+                        time:   [1.4277 ms 1.4334 ms 1.4391 ms]
+
+(n: 2048, t: 1023) | Dealer: Deal Secret
+                        time:   [65.238 ms 65.673 ms 66.142 ms]
+
+(n: 2048, t: 1023) | Party: Verify Encrypted Shares
+                        time:   [46.546 ms 46.777 ms 47.033 ms]
+
+(n: 2048, t: 1023) | Party: Decrypt Share
+                        time:   [25.148 µs 25.334 µs 25.544 µs]
+
+(n: 2048, t: 1023) | Party: Generate Proof
+                        time:   [31.797 µs 32.000 µs 32.280 µs]
+
+(n: 2048, t: 1023) | Party: Verify Decrypted Shares
+                        time:   [22.100 ms 22.183 ms 22.277 ms]
+
+(n: 2048, t: 1023) | Party: Reconstruct Secret
+                        time:   [3.5771 ms 3.6008 ms 3.6286 ms]
+
+(n: 4096, t: 2047) | Dealer: Deal Secret
+                        time:   [228.41 ms 229.44 ms 230.52 ms]
+
+(n: 4096, t: 2047) | Party: Verify Encrypted Shares
+                        time:   [158.70 ms 159.41 ms 160.15 ms]
+(n: 4096, t: 2047) | Party: Decrypt Share
+                        time:   [25.074 µs 25.131 µs 25.197 µs]
+
+(n: 4096, t: 2047) | Party: Generate Proof
+                        time:   [31.854 µs 32.009 µs 32.196 µs]
+
+(n: 4096, t: 2047) | Party: Verify Decrypted Shares
+                        time:   [43.383 ms 43.546 ms 43.726 ms]
+
+(n: 4096, t: 2047) | Party: Reconstruct Secret
+                        time:   [6.2436 ms 6.2708 ms 6.3007 ms]
+
+Basepoint Multiplication
+                        time:   [6.5380 µs 6.5684 µs 6.6039 µs]
+
+Point Compression       time:   [2.3717 µs 2.3962 µs 2.4224 µs]
+
+Point Decompression     time:   [2.5617 µs 2.5762 µs 2.5948 µs]
+
+Point Decompression Handled
+                        time:   [2.5553 µs 2.5694 µs 2.5887 µs]
+
