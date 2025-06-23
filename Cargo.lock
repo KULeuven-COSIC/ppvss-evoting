@@ -328,6 +328,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "evoting_pi_s_ppvss"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "criterion",
+ "curve25519-dalek",
+ "pi_s_ppvss",
+ "rand",
+ "rand_chacha",
+ "rayon",
+ "zeroize",
+]
+
+[[package]]
+name = "evoting_schoenmakers"
+version = "0.1.0"
+dependencies = [
+ "blake3",
+ "criterion",
+ "curve25519-dalek",
+ "rand",
+ "rand_chacha",
+ "rayon",
+ "schoenmakers",
+ "zeroize",
+]
+
+[[package]]
 name = "fiat-crypto"
 version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
