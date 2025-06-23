@@ -8,7 +8,7 @@ The Rust workspace contains the following crates:
 - (P)PVSS Schemes:
 	- `pi_s_pvss`: A reference implementation of the $\Pi_{s}$ PVSS scheme from Baghery's [Π: A Unified Framework for Computational Verifiable Secret Sharing](https://eprint.iacr.org/2023/1669)
 	- `schoenmakers`: A reference implementation of Schoenmakers' [A Simple Publicly Verifiable Secret Sharing Scheme and Its Application to Electronic Voting](https://doi.org/10.1007/3-540-48405-1_10)
-	- `pi_s_ppvss`: An extension of $\Pi_{s}$, into a PPVSS.
+	- `pi_s_ppvss`: An extension of $\Pi_{s}$ into a PPVSS.
 - E-Voting Schemes:
 	- `evoting_pi_s_ppvss`: An e-voting scheme based on `pi_s_ppvss`.
 	- `evoting_schoenmakers`: An e-voting scheme based on `schoenmakers`.
