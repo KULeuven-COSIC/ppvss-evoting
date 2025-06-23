@@ -1,0 +1,17 @@
+(n: 9, t: 4) | Sch | Voter: Cast Vote
+                        time:   [563.47 µs 565.56 µs 567.68 µs]
+(n: 17, t: 8) | Sch | Voter: Cast Vote
+                        time:   [704.82 µs 706.30 µs 707.75 µs]
+(n: 256, t: 127) | Sch | Voter: Cast Vote
+                        time:   [4.6501 ms 4.6592 ms 4.6687 ms]
+(n: 512, t: 255) | Sch | Voter: Cast Vote
+                        time:   [9.8944 ms 9.9283 ms 9.9641 ms]
+
+(n: 9, t: 4) | Sch | BulletinBoard: Ballot Verification
+                        time:   [695.12 µs 696.24 µs 697.46 µs]
+(n: 17, t: 8) | Sch | BulletinBoard: Ballot Verification
+                        time:   [1.2390 ms 1.2426 ms 1.2464 ms]
+(n: 256, t: 127) | Sch | BulletinBoard: Ballot Verification
+                        time:   [120.83 ms 121.15 ms 121.51 ms]
+(n: 512, t: 255) | Sch | BulletinBoard: Ballot Verification
+                        time:   [479.80 ms 481.19 ms 482.66 ms]

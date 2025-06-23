@@ -1,0 +1,67 @@
+(n: 9, t: 4) | Pi_S | Voter: Cast Vote
+                        time:   [355.90 µs 356.52 µs 357.15 µs]
+(n: 17, t: 8) | Pi_S | Voter: Cast Vote
+                        time:   [428.45 µs 429.31 µs 430.26 µs]
+(n: 256, t: 127) | Pi_S | Voter: Cast Vote
+                        time:   [2.6319 ms 2.6381 ms 2.6443 ms]
+(n: 512, t: 255) | Pi_S | Voter: Cast Vote
+                        time:   [6.4200 ms 6.4379 ms 6.4560 ms]
+
+(n: 9, t: 4) | Pi_S | BulletinBoard: Ballot Verification
+                        time:   [378.59 µs 379.06 µs 379.53 µs]
+(n: 17, t: 8) | Pi_S | BulletinBoard: Ballot Verification
+                        time:   [410.83 µs 411.26 µs 411.69 µs]
+(n: 256, t: 127) | Pi_S | BulletinBoard: Ballot Verification
+                        time:   [2.2969 ms 2.3000 ms 2.3036 ms]
+(n: 512, t: 255) | Pi_S | BulletinBoard: Ballot Verification
+                        time:   [5.3196 ms 5.3318 ms 5.3442 ms]
+
+(m: 128, n: 9, t: 4) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [2.2271 ms 2.2369 ms 2.2456 ms]
+(m: 128, n: 9, t: 4) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [69.474 µs 69.514 µs 69.562 µs]
+(m: 128, n: 9, t: 4) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [1.3351 ms 1.3369 ms 1.3390 ms]
+
+(m: 128, n: 17, t: 8) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [2.3622 ms 2.3732 ms 2.3832 ms]
+(m: 128, n: 17, t: 8) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [69.417 µs 69.492 µs 69.614 µs]
+(m: 128, n: 17, t: 8) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [1.4437 ms 1.4476 ms 1.4512 ms]
+
+(m: 256, n: 256, t: 127) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [4.9432 ms 5.0175 ms 5.0964 ms]
+(m: 256, n: 256, t: 127) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [71.337 µs 71.844 µs 72.365 µs]
+(m: 256, n: 256, t: 127) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [5.3249 ms 5.3386 ms 5.3520 ms]
+
+(m: 512, n: 512, t: 255) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [17.545 ms 17.626 ms 17.694 ms]
+(m: 512, n: 512, t: 255) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [69.405 µs 69.427 µs 69.451 µs]
+(m: 512, n: 512, t: 255) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [10.203 ms 10.224 ms 10.246 ms]
+
+(m: 50000, n: 17, t: 8) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [941.88 ms 944.69 ms 947.44 ms]
+(m: 50000, n: 17, t: 8) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [75.458 µs 75.913 µs 76.629 µs]
+(m: 50000, n: 17, t: 8) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [365.33 ms 365.94 ms 366.67 ms]
+
+(m: 100000, n: 17, t: 8) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [1.8864 s 1.8915 s 1.8968 s]
+(m: 100000, n: 17, t: 8) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [75.173 µs 75.250 µs 75.372 µs]
+(m: 100000, n: 17, t: 8) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [728.43 ms 728.92 ms 729.51 ms]
+
+(m: 1000000, n: 17, t: 8) | Pi_S | Tallier: Sum Encrypted Shares
+                        time:   [18.035 s 18.299 s 18.552 s]
+(m: 1000000, n: 17, t: 8) | Pi_S | Tallier: Decrypt Share and Generate Proof
+                        time:   [75.772 µs 76.405 µs 77.032 µs]
+(m: 1000000, n: 17, t: 8) | Pi_S | Tallier: Tally Votes and Get Result
+                        time:   [7.3182 s 7.3322 s 7.3464 s]
+

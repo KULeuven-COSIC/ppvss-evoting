@@ -24,12 +24,25 @@ The only requirement to run this code is installing a Rust toolchain (Edition 20
 
 The following commands may be executed in the workspace root for all crates at once, or inside each crate's root individually.
 
-To run benchmarks:
+### Benchmarking 
+
+We include the result of running benchmarks in the file `benches.txt` for each crate.
+
+#### Benchmarking setup:
+
+- MacBook Pro with M4 Pro 12 Cores (8 performance and 4 efficiency cores).
+- Restriction to 8 threads: `RAYON_NUM_THREADS = 8`.
+- 24 GB of RAM.
+
+#### To reproduce our results:
+
 ```
 cargo bench
 ```
 
-To run the example end-to-end execution:
+#### Executing example binary:
+
+To run the end-to-end execution:
 ```
 cargo run --release
 ```
