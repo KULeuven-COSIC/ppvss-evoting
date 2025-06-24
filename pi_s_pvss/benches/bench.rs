@@ -1,13 +1,9 @@
+use common::{error::ErrorKind::PointDecompressionError, random::random_scalar};
 use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
-use pi_s_pvss::{
-    dealer::Dealer,
-    error::ErrorKind::PointDecompressionError,
-    utils::{generate_parties, precompute_lambda},
-};
+use pi_s_pvss::{dealer::Dealer, party::generate_parties};
 
-use rand::{SeedableRng, thread_rng};
-use rand_chacha::ChaChaRng;
+use common::utils::precompute_lambda;
 
 fn pvss(c: &mut Criterion) {
     for (n, t) in [
@@ -18,11 +14,11 @@ fn pvss(c: &mut Criterion) {
         (1024, 511),
         (2048, 1023),
     ] {
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
+        let G: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
 
         let mut parties = generate_parties(&G, &mut rng, n, t);
 
@@ -42,7 +38,7 @@ fn pvss(c: &mut Criterion) {
 
             party.ingest_public_keys(&public_keys).unwrap();
         }
-        let secret = Scalar::random(&mut rng);
+        let secret = random_scalar(&mut rng);
 
         let (encrypted_shares, (d, z)) =
             dealer.deal_secret(&mut rng, &mut hasher, &mut buf, &secret);
@@ -161,9 +157,9 @@ fn pvss(c: &mut Criterion) {
 }
 
 fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
-    let x = Scalar::random(&mut rng);
-    let G: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
+    let mut rng = rand::rng();
+    let x = random_scalar(&mut rng);
+    let G: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
 
     let gx = G * x;
     let gx_compressed = gx.compress();

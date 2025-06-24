@@ -1,15 +1,16 @@
 use blake3::Hasher;
-use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
+use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
 
-use rand_chacha::rand_core::CryptoRngCore;
-use zeroize::Zeroize;
-
-use pi_s_ppvss::{
-    dealer::Dealer,
+use common::{
     error::{Error, ErrorKind::UninitializedValue},
     polynomial::Polynomial,
-    utils::{batch_decompress_ristretto_points, verify_encrypted_shares_standalone},
+    random::random_scalar,
+    utils::batch_decompress_ristretto_points,
 };
+use rand::{CryptoRng, RngCore};
+use zeroize::Zeroize;
+
+use pi_s_ppvss::{dealer::Dealer, utils::verify_encrypted_shares_standalone};
 use rayon::prelude::*;
 #[derive(Clone)]
 pub struct CompressedVoteProof {
@@ -173,9 +174,9 @@ impl Voter {
         Error,
     >
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let s = Scalar::random(rng);
+        let s = random_scalar(rng);
         let (encrypted_shares, (d, z)) = self.dealer.deal_secret(rng, hasher, buf, &s);
 
         let decompressed_shares = batch_decompress_ristretto_points(&encrypted_shares).unwrap();
@@ -185,14 +186,16 @@ impl Voter {
         // generate vote
         self.generate_vote(&G, &s, choice);
 
-        assert!(verify_encrypted_shares_standalone(
-            &(encrypted_shares.clone(), decompressed_shares.clone()),
-            &self.dealer.public_keys,
-            (&d, &z),
-            hasher,
-            buf,
-        )
-        .unwrap());
+        assert!(
+            verify_encrypted_shares_standalone(
+                &(encrypted_shares.clone(), decompressed_shares.clone()),
+                &self.dealer.public_keys,
+                (&d, &z),
+                hasher,
+                buf,
+            )
+            .unwrap()
+        );
 
         //dleq_vote
         let vote_proof = self.dleq_vote(rng, G, &y0, &s, hasher, buf)?;
@@ -228,7 +231,7 @@ impl Voter {
         buf: &mut [u8; 64],
     ) -> Result<CompressedVoteProof, Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         match (self.vote, self.encrypted_vote) {
             (Some(v), Some(u)) => {
@@ -236,14 +239,14 @@ impl Voter {
                 hasher.update(u.compress().as_bytes());
                 hasher.update(y0.compress().as_bytes());
 
-                let w = Scalar::random(rng);
+                let w = random_scalar(rng);
 
                 // if vote {proof.d0 = d0t_d1f; proof.d1 = d0f_d1t} else {proof.d0 = d0f_d1t; proof.d1 = d0t_d1f};
-                let d0t_d1f = Scalar::random(rng);
+                let d0t_d1f = random_scalar(rng);
                 let d0f_d1t = -d0t_d1f;
 
                 // if vote {proof.r0 = r0t_r1f} else {proof.r1 = r0t_r1f};
-                let r0t_r1f = Scalar::random(rng);
+                let r0t_r1f = random_scalar(rng);
 
                 // proof.a0 = vote ? a0t_a1f : a0f_a1t;
                 // proof.a1 = vote ? a0f_a1t : a0t_a1f;

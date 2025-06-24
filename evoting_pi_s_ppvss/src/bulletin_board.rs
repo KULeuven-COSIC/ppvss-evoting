@@ -1,7 +1,8 @@
 use crate::voter::VoteProof;
 use blake3::Hasher;
-use curve25519_dalek::{traits::Identity, RistrettoPoint, Scalar};
-use pi_s_ppvss::{polynomial::Polynomial, utils::verify_encrypted_shares_standalone};
+use common::polynomial::Polynomial;
+use curve25519_dalek::{RistrettoPoint, Scalar, traits::Identity};
+use pi_s_ppvss::utils::verify_encrypted_shares_standalone;
 use rayon::prelude::*;
 
 #[derive(Clone)]

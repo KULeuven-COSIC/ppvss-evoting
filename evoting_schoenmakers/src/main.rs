@@ -1,8 +1,7 @@
-use curve25519_dalek::{ristretto::CompressedRistretto, scalar::Scalar, RistrettoPoint};
+use common::utils::precompute_lambda;
+use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use evoting_schoenmakers::voter::Voter;
-use rand::{thread_rng, SeedableRng};
-use rand_chacha::ChaChaRng;
-use schoenmakers::utils::precompute_lambda;
+use rand::{SeedableRng, thread_rng};
 use zeroize::Zeroize;
 
 fn main() {
@@ -10,15 +9,15 @@ fn main() {
     // const T: usize = 16;
     // const M: usize = 100;
 
-    // let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+    // let mut rng = rand::rng();
     // let mut hasher = blake3::Hasher::new();
     // let mut buf = [0u8; 64];
 
     // let lambdas = precompute_lambda(T);
-    // let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-    // let H: RistrettoPoint = RistrettoPoint::random(&mut rng);
+    // let G: RistrettoPoint = random_point(&mut rng);
+    // let H: RistrettoPoint = random_point(&mut rng);
 
-    // let pk0 = RistrettoPoint::random(&mut rng);
+    // let pk0 = random_point(&mut rng);
 
     // let mut parties = generate_parties(&G, &H, &mut rng, N, M, T, &pk0);
 

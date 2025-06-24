@@ -1,11 +1,12 @@
-use criterion::{criterion_group, criterion_main, BatchSize, Criterion};
-use curve25519_dalek::{ristretto::CompressedRistretto, scalar::Scalar, RistrettoPoint};
+use common::{
+    error::ErrorKind::PointDecompressionError,
+    random::{random_point, random_scalar},
+    utils::precompute_lambda,
+};
+use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
+use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use evoting_schoenmakers::{bulletin_board::BulletinBoard, tallier::Tallier, voter::Voter};
-use rand::{thread_rng, SeedableRng};
-use rand_chacha::ChaChaRng;
 use rayon::prelude::*;
-use schoenmakers::{error::ErrorKind::PointDecompressionError, utils::precompute_lambda};
-use zeroize::Zeroize;
 
 const PARAMSET: [(usize, usize, usize); 4] =
     [(128, 9, 4), (128, 17, 8), (256, 256, 127), (512, 512, 255)];
@@ -21,12 +22,12 @@ fn tallying(c: &mut Criterion) {
         let f_count = (m as f64 * false_ratio) as usize;
         let t_count = m - f_count;
 
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-        let H: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
+        let H: RistrettoPoint = random_point(&mut rng);
 
         let mut talliers = Tallier::generate_talliers(&G, &H, &mut rng, n, t);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers
@@ -185,12 +186,12 @@ fn tallying(c: &mut Criterion) {
 
 fn ballot_verification(c: &mut Criterion) {
     for (_, n, t) in PARAMSET {
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-        let H: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
+        let H: RistrettoPoint = random_point(&mut rng);
 
         let talliers = Tallier::generate_talliers(&G, &H, &mut rng, n, t);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers
@@ -235,10 +236,10 @@ fn ballot_verification(c: &mut Criterion) {
 
 fn cast_ballot(c: &mut Criterion) {
     for (_, n, t) in PARAMSET {
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-        let H: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
+        let H: RistrettoPoint = random_point(&mut rng);
 
         let talliers = Tallier::generate_talliers(&G, &H, &mut rng, n, t);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers
@@ -254,7 +255,7 @@ fn cast_ballot(c: &mut Criterion) {
                 b.iter_batched(
                     || (blake3::Hasher::new(), [0u8; 64]),
                     |(mut hasher, mut buf)| {
-                        let s = Scalar::random(&mut rng);
+                        let s = random_scalar(&mut rng);
                         let (_, (_, _), dealer_commitments) =
                             voter.dealer.deal_secret(&mut rng, &mut hasher, &mut buf, s);
 
@@ -274,8 +275,8 @@ fn cast_ballot(c: &mut Criterion) {
 }
 
 fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
-    let x = Scalar::random(&mut rng);
+    let mut rng = rand::rng();
+    let x = random_scalar(&mut rng);
 
     let gx = RistrettoPoint::mul_base(&x);
     let gx_compressed = gx.compress();

@@ -1,14 +1,16 @@
 use blake3::Hasher;
 use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
-use zeroize::Zeroize;
-
-use crate::{
+use common::{random::random_scalar, utils::batch_decompress_ristretto_points,
     error::{
         Error,
         ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
     },
-    utils::{batch_decompress_ristretto_points, verify_encrypted_shares_standalone},
+};
+use rand::{CryptoRng, RngCore};
+use zeroize::Zeroize;
+
+use crate::{
+    utils::{verify_encrypted_shares_standalone},
 };
 use rayon::prelude::*;
 
@@ -46,9 +48,9 @@ impl Party {
         index: usize,
     ) -> Result<Self, Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let private_key = Scalar::random(rng);
+        let private_key = random_scalar(rng);
         let public_key = G * private_key;
 
         if index <= n && t < n && t as f32 == ((n - 1) as f32 / 2.0).floor() {
@@ -241,11 +243,11 @@ impl Party {
         buf: &mut [u8; 64],
     ) -> Result<(), Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         match (&self.decrypted_share, &self.encrypted_share) {
             (Some(decrypted_share), Some(encrypted_share)) => {
-                let r = Scalar::random(rng);
+                let r = random_scalar(rng);
 
                 hasher.update(self.public_key.0.as_bytes());
                 hasher.update(encrypted_share.compress().as_bytes());
@@ -334,4 +336,18 @@ impl Party {
                 None => Err(UninitializedValue("party.decrypted_shares").into()),
         }
     }
+}
+pub fn generate_parties<R>(
+    G: RistrettoPoint,
+    H: RistrettoPoint,
+    rng: &mut R,
+    n: usize,
+    t: usize,
+) -> Vec<Party>
+where
+    R: CryptoRng + RngCore,
+{
+    (1..=n)
+        .map(|i| Party::new(G, H, rng, n, t, i).unwrap())
+        .collect()
 }

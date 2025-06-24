@@ -8,10 +8,10 @@ edition = {workspace = true}
 [dependencies]
 curve25519-dalek = {workspace = true}
 rand = {workspace = true}
-rand_chacha = {workspace = true}
 rayon = {workspace = true}
 zeroize = {workspace = true}
 schoenmakers = {path = "../schoenmakers"}
+common = {path = "../common"}
 
 [target.'cfg(all(target_arch = "aarch64"))'.dependencies]
 blake3 = {version = "1.8.2", features = ["neon", "rayon", "zeroize", "traits-preview"]}

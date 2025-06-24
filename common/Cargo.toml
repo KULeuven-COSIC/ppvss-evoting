@@ -1,18 +1,17 @@
 [package]
-name = "evoting_pi_s_ppvss"
+name = "common"
 version = {workspace = true}
 authors = {workspace = true}
 edition = {workspace = true}
-
+license = {workspace = true}
 
 [dependencies]
 curve25519-dalek = {workspace = true}
+error-chain = {workspace = true}
 rand = {workspace = true}
 rayon = {workspace = true}
 zeroize = {workspace = true}
-pi_s_ppvss = {path = "../pi_s_ppvss"}
-common = {path = "../common"}
-
+num-bigint = "0.4.6"
 
 [target.'cfg(all(target_arch = "aarch64"))'.dependencies]
 blake3 = {version = "1.8.2", features = ["neon", "rayon", "zeroize", "traits-preview"]}
@@ -22,6 +21,6 @@ blake3 = {version = "1.8.2", features = ["rayon", "zeroize", "traits-preview"]}
 [dev-dependencies]
 criterion = {workspace = true}
 
-[[bench]]
-name = "bench"
-harness = false
+# [[bench]]
+# name = "bench"
+# harness = false

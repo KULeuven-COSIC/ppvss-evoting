@@ -1,5 +1,6 @@
+use common::random::random_scalar;
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
+use rand::{CryptoRng, RngCore};
 
 use rayon::prelude::*;
 
@@ -13,44 +14,12 @@ impl Polynomial {
         self.coefficients.len()
     }
 
-    pub(crate) fn coef_at(&self, index: usize) -> Option<Scalar> {
-        if index < self.len() {
-            Some(self.coefficients[index])
-        } else {
-            None
-        }
-    }
-    pub(crate) fn sample<R>(degree: usize, rng: &mut R) -> Self
-    where
-        R: CryptoRngCore + ?Sized,
-    {
-        Polynomial {
-            coefficients: (0..=degree).map(|_| Scalar::random(rng)).collect(),
-        }
-    }
-    pub(crate) fn sample_two<R>(degree: usize, rng: &mut R) -> (Self, Self)
-    where
-        R: CryptoRngCore + ?Sized,
-    {
-        let (coefs_1, coefs_2) = (0..=degree)
-            .map(|_| (Scalar::random(rng), Scalar::random(rng)))
-            .collect();
-
-        (
-            Polynomial {
-                coefficients: coefs_1,
-            },
-            Polynomial {
-                coefficients: coefs_2,
-            },
-        )
-    }
     pub(crate) fn sample_two_set_f0<R>(degree: usize, f0: &Scalar, rng: &mut R) -> (Self, Self)
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         let (mut coefs_1, coefs_2): (Vec<Scalar>, Vec<Scalar>) = (0..=degree)
-            .map(|_| (Scalar::random(rng), Scalar::random(rng)))
+            .map(|_| (random_scalar(rng), random_scalar(rng)))
             .collect();
 
         coefs_1[0] = *f0;
@@ -94,52 +63,6 @@ impl Polynomial {
                         .iter()
                         .zip(x_powers)
                         .fold(Scalar::ZERO, |acc, (coef, x_pow)| acc + coef * x_pow)
-            })
-            .collect()
-    }
-
-    pub(crate) fn evaluate_multiply_two(
-        &self,
-        other: &Self,
-        points: &Vec<RistrettoPoint>,
-    ) -> (Vec<CompressedRistretto>, Vec<CompressedRistretto>) {
-        points
-            .par_iter()
-            .enumerate()
-            .map(|(i, point)| {
-                // i is the index of the party
-                // i here means start evaluating at x=0
-                // x_powers[0] <= constant term multiplier
-                // x_powers[1] = x(^1)
-
-                let mut x_powers: Vec<Scalar> = Vec::with_capacity(self.coefficients.len());
-                x_powers.push(Scalar::ONE);
-                x_powers.push(Scalar::from((i) as u64));
-
-                // x_powers[2] = x_powers[1] * x_powers[2-1] == x_powers[1] * x_powers[1] = x * x = x^2
-                // x_powers[3] = x_powers[1] * x_powers[3-1] == x_powers[1] * x_powers[2] = x * x^2 == x^3
-                // ...
-                // i+1 here means start evaluating at till x = 32
-                for j in 2..self.coefficients.len() {
-                    x_powers.push(x_powers[1] * x_powers[j - 1]);
-                }
-
-                let (f_val, r_val) = self
-                    .coefficients
-                    .par_iter()
-                    .zip(other.coefficients.par_iter())
-                    .zip(x_powers)
-                    .map(|((coef_f, coef_r), x_pow)| (coef_f * x_pow, coef_r * x_pow))
-                    .reduce(
-                        || (Scalar::ZERO, Scalar::ZERO),
-                        |(mut acc_f, mut acc_r), (fval, rval)| {
-                            acc_f += fval;
-                            acc_r += rval;
-                            (acc_f, acc_r)
-                        },
-                    );
-
-                ((f_val * point).compress(), (r_val * point).compress())
             })
             .collect()
     }

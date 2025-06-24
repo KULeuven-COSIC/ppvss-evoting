@@ -1,15 +1,19 @@
 use blake3::Hasher;
+
 use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
+use rand::{CryptoRng, RngCore};
 use zeroize::Zeroize;
 
+use common::{random::random_scalar, error::{
+    Error,
+    ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
+}, 
+polynomial::Polynomial,
+utils::{batch_decompress_ristretto_points},
+};
+
 use crate::{
-    error::{
-        Error,
-        ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
-    },
-    polynomial::Polynomial,
-    utils::{batch_decompress_ristretto_points, verify_encrypted_shares_standalone},
+    utils::verify_encrypted_shares_standalone
 };
 use rayon::prelude::*;
 
@@ -44,9 +48,9 @@ impl Party {
         pk0: RistrettoPoint,
     ) -> Result<Self, Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let private_key = Scalar::random(rng);
+        let private_key = random_scalar(rng);
         let public_key = G * &private_key;
 
         if index <= n && t < n && t as f32 == ((n - 1) as f32 / 2.0).floor() {
@@ -209,11 +213,11 @@ impl Party {
         buf: &mut [u8; 64],
     ) -> Result<(), Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         match (&self.decrypted_share, &self.encrypted_share) {
             (Some(decrypted_share), Some(encrypted_share)) => {
-                let r = Scalar::random(rng);
+                let r = random_scalar(rng);
 
                 let c1 = (G * &r).compress();
                 let c2 = (decrypted_share * r).compress();
@@ -316,4 +320,19 @@ impl Party {
         Ok(point.compress().decompress().unwrap()
             == (self.pk0 * f0).compress().decompress().unwrap())
     }
+}
+
+pub fn generate_parties<R>(
+    G: &RistrettoPoint,
+    rng: &mut R,
+    n: usize,
+    t: usize,
+    pk0: &RistrettoPoint,
+) -> Vec<Party>
+where
+    R: CryptoRng + RngCore,
+{
+    (1..=n)
+        .map(|i| Party::new(G, rng, n, t, i, *pk0).unwrap())
+        .collect()
 }

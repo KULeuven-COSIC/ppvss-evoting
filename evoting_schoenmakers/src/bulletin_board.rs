@@ -1,6 +1,6 @@
 use crate::voter::VoteProof;
 use blake3::Hasher;
-use curve25519_dalek::{traits::Identity, RistrettoPoint, Scalar};
+use curve25519_dalek::{RistrettoPoint, Scalar, traits::Identity};
 use rayon::prelude::*;
 use schoenmakers::{dealer, utils::verify_encrypted_shares_standalone};
 use zeroize::Zeroize;

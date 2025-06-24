@@ -1,24 +1,21 @@
+use common::{random::random_scalar, utils::precompute_lambda};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
-use rand::{SeedableRng, thread_rng};
-use rand_chacha::ChaChaRng;
-use schoenmakers::{
-    dealer::Dealer,
-    utils::{generate_parties, precompute_lambda},
-};
+
+use schoenmakers::{dealer::Dealer, party::generate_parties};
 
 fn main() {
     const N: usize = 79;
     const T: usize = 39;
 
-    let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+    let mut rng = rand::rng();
 
-    let secret = Scalar::random(&mut rng);
+    let secret = random_scalar(&mut rng);
 
     let mut hasher = blake3::Hasher::new();
     let mut buf = [0u8; 64];
 
-    let G: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
-    let H: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
+    let G: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
+    let H: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
 
     let lambdas = precompute_lambda(N, T);
 

@@ -1,9 +1,10 @@
 use blake3::Hasher;
 use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
-use rand_chacha::rand_core::CryptoRngCore;
+
+use rand::{CryptoRng, RngCore};
 use zeroize::Zeroize;
 
-use crate::{
+use common::{
     error::{
         Error,
         ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
@@ -42,9 +43,9 @@ impl Party {
         index: usize,
     ) -> Result<Self, Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let private_key = Scalar::random(rng);
+        let private_key = common::random::random_scalar(rng);
         let public_key = G * private_key;
 
         if index <= n && t < n && t as f32 == ((n - 1) as f32 / 2.0).floor() {
@@ -168,7 +169,8 @@ impl Party {
             Some((d, z)) => match (&self.encrypted_shares, &self.public_keys) {
                 (Some(encrypted_shares), Some(public_keys)) => {
                     let shares: Vec<CompressedRistretto> = z
-                        .evaluate_multiply(public_keys)
+                        .evaluate_multiply(public_keys, 1)
+                        .1
                         .par_iter()
                         .zip(encrypted_shares.1.par_iter())
                         .map(|(x, enc_share)| (x - (enc_share * d)).compress())
@@ -217,11 +219,11 @@ impl Party {
         buf: &mut [u8; 64],
     ) -> Result<(), Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         match (&self.decrypted_share, &self.encrypted_share) {
             (Some(decrypted_share), Some(encrypted_share)) => {
-                let r = Scalar::random(rng);
+                let r = common::random::random_scalar(rng);
                 let c1 = (G * &r).compress();
                 let c2 = (decrypted_share * r).compress();
 
@@ -315,4 +317,13 @@ impl Party {
             None => Err(UninitializedValue("party.decrypted_shares").into()),
         }
     }
+}
+
+pub fn generate_parties<R>(G: &RistrettoPoint, rng: &mut R, n: usize, t: usize) -> Vec<Party>
+where
+    R: CryptoRng + RngCore,
+{
+    (1..=n)
+        .map(|i| Party::new(G, rng, n, t, i).unwrap())
+        .collect()
 }

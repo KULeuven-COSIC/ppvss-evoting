@@ -5,11 +5,10 @@ pub mod voter;
 #[cfg(test)]
 mod test {
     use crate::{bulletin_board::BulletinBoard, tallier::Tallier, voter::Voter};
-    use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-    use rand::{thread_rng, SeedableRng};
-    use rand_chacha::ChaChaRng;
+    use common::random::random_point;
+    use common::utils::precompute_lambda;
+    use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
     use rayon::prelude::*;
-    use schoenmakers::utils::precompute_lambda;
     use zeroize::Zeroize;
 
     #[test]
@@ -25,12 +24,12 @@ mod test {
         let f_count = (m as f64 * false_ratio) as usize;
         let t_count = m - f_count;
 
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-        let H: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
+        let H: RistrettoPoint = random_point(&mut rng);
 
         let mut talliers = Tallier::generate_talliers(&G, &H, &mut rng, n, t);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers

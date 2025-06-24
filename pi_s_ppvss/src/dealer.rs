@@ -1,12 +1,11 @@
-use crate::{
+use blake3::Hasher;
+use common::{
     error::{Error, ErrorKind::CountMismatch},
     polynomial::Polynomial,
     utils::batch_decompress_ristretto_points,
 };
-
-use blake3::Hasher;
-use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
+use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
+use rand::{CryptoRng, RngCore};
 use zeroize::Zeroize;
 
 pub struct Dealer {
@@ -50,12 +49,12 @@ impl Dealer {
         secret: &Scalar,
     ) -> (Vec<CompressedRistretto>, (Scalar, Polynomial))
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         let (mut z, r) = Polynomial::sample_two_set_f0(self.t, secret, rng);
         self.secret = Some(*secret);
 
-        let (encrypted_shares, r_vals) = z.evaluate_multiply_two(&r, &self.public_keys);
+        let (encrypted_shares, r_vals) = z.evaluate_multiply_two_ppvss(&r, &self.public_keys);
 
         encrypted_shares.iter().chain(r_vals.iter()).for_each(|x| {
             hasher.update(x.as_bytes());

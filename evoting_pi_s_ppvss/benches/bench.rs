@@ -1,13 +1,14 @@
 use blake3::Hasher;
+use common::{
+    error::ErrorKind::PointDecompressionError,
+    random::{random_point, random_scalar},
+    utils::precompute_lambda,
+};
 use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use evoting_pi_s_ppvss::{bulletin_board::BulletinBoard, tallier::Tallier, voter::Voter};
-use pi_s_ppvss::{
-    error::ErrorKind::PointDecompressionError,
-    utils::{generate_parties, precompute_lambda},
-};
-use rand::{RngCore, SeedableRng, thread_rng};
-use rand_chacha::ChaChaRng;
+use pi_s_ppvss::party::generate_parties;
+use rand::RngCore;
 use rayon::prelude::*;
 use zeroize::Zeroize;
 
@@ -25,15 +26,15 @@ fn tallying(c: &mut Criterion) {
         let f_count = (m as f64 * false_ratio) as usize;
         let t_count = m - f_count;
 
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
 
         // Sample random point
-        let pk0 = RistrettoPoint::random(&mut rng);
+        let pk0 = random_point(&mut rng);
 
         let mut talliers = Tallier::generate_talliers(&G, &mut rng, n, t, &pk0);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers
@@ -194,14 +195,14 @@ fn tallying(c: &mut Criterion) {
 
 fn ballot_verification(c: &mut Criterion) {
     for (_, n, t) in PARAMSET {
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
         let mut hasher = blake3::Hasher::new();
         let mut buf: [u8; 64] = [0u8; 64];
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
 
         // Sample random point
-        let pk0 = RistrettoPoint::random(&mut rng);
+        let pk0 = random_point(&mut rng);
 
         let talliers = Tallier::generate_talliers(&G, &mut rng, n, t, &pk0);
         let public_keys: (Vec<CompressedRistretto>, Vec<RistrettoPoint>) = talliers
@@ -246,11 +247,11 @@ fn ballot_verification(c: &mut Criterion) {
 
 fn cast_ballot(c: &mut Criterion) {
     for (_, n, t) in PARAMSET {
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
 
-        let G: RistrettoPoint = RistrettoPoint::random(&mut rng);
+        let G: RistrettoPoint = random_point(&mut rng);
 
-        let pk0 = RistrettoPoint::random(&mut rng);
+        let pk0 = random_point(&mut rng);
 
         let parties = generate_parties(&G, &mut rng, n, t, &pk0);
         let public_keys: Vec<CompressedRistretto> =
@@ -271,7 +272,7 @@ fn cast_ballot(c: &mut Criterion) {
                         )
                     },
                     |(mut hasher1, mut hasher2, mut buf1, mut buf2)| {
-                        let s = Scalar::random(&mut rng);
+                        let s = random_scalar(&mut rng);
                         let (encrypted_shares, (_, _)) =
                             voter
                                 .dealer
@@ -293,8 +294,8 @@ fn cast_ballot(c: &mut Criterion) {
 }
 
 fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
-    let x = Scalar::random(&mut rng);
+    let mut rng = rand::rng();
+    let x = random_scalar(&mut rng);
 
     let gx = RistrettoPoint::mul_base(&x);
     let gx_compressed = gx.compress();
@@ -318,7 +319,7 @@ fn hasher_bench(c: &mut Criterion) {
     c.bench_function("Buf Zeroize", |b| {
         b.iter_batched(
             || {
-                let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+                let mut rng = rand::rng();
                 let mut buf: [u8; 64] = [0u8; 64];
                 rng.fill_bytes(&mut buf);
                 buf
@@ -332,7 +333,7 @@ fn hasher_bench(c: &mut Criterion) {
     c.bench_function("Hasher Reset", |b| {
         b.iter_batched(
             || {
-                let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+                let mut rng = rand::rng();
                 let mut buf: [u8; 64] = [0u8; 64];
                 rng.fill_bytes(&mut buf);
                 let mut hasher = Hasher::new();

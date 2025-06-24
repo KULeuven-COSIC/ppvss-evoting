@@ -1,12 +1,13 @@
-use crate::{
+use common::{
     error::{Error, ErrorKind::CountMismatch},
     polynomial::Polynomial,
-    utils::batch_decompress_ristretto_points,
 };
 
 use blake3::Hasher;
+use common::utils::batch_decompress_ristretto_points;
 use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
-use rand_chacha::rand_core::CryptoRngCore;
+
+use rand::{CryptoRng, RngCore};
 use rayon::prelude::*;
 use zeroize::Zeroize;
 
@@ -39,7 +40,7 @@ impl Dealer {
         secret: &Scalar,
     ) -> (Vec<CompressedRistretto>, (Scalar, Polynomial))
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         let (mut z, r) = Polynomial::sample_two_set_f0(self.t, secret, rng);
         self.secret = Some(*secret);

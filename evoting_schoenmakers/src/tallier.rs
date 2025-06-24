@@ -1,9 +1,10 @@
-use curve25519_dalek::{RistrettoPoint, Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
-use schoenmakers::{
+use common::{
     error::{Error, ErrorKind::InvalidPararmeterSet},
-    party::Party,
+    random::random_scalar,
 };
+use curve25519_dalek::RistrettoPoint;
+use rand::{CryptoRng, RngCore};
+use schoenmakers::party::Party;
 
 use crate::bulletin_board::BulletinBoard;
 
@@ -23,9 +24,9 @@ impl Tallier {
         index: usize,
     ) -> Result<Self, Error>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let private_key = Scalar::random(rng);
+        let private_key = random_scalar(rng);
         let public_key = G * &private_key;
 
         if index <= n && t < n && t as f32 == ((n - 1) as f32 / 2.0).floor() {
@@ -64,7 +65,7 @@ impl Tallier {
         t: usize,
     ) -> Vec<Self>
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         (1..=n)
             .map(|i| Self {

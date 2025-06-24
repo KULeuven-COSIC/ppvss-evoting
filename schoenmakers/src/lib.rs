@@ -1,31 +1,26 @@
 pub mod dealer;
-pub mod error;
 pub mod party;
-pub mod polynomial;
 pub mod utils;
 
 #[cfg(test)]
 mod tests {
+    use common::random::random_scalar;
     use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
-    use rand::{SeedableRng, thread_rng};
-    use rand_chacha::ChaChaRng;
 
-    use crate::{
-        dealer::Dealer,
-        utils::{generate_parties, precompute_lambda},
-    };
+    use crate::{dealer::Dealer, party::generate_parties};
+    use common::utils::precompute_lambda;
 
     #[test]
     fn end_to_end() {
         const N: usize = 128;
         const T: usize = 63;
 
-        let mut rng = ChaChaRng::from_rng(thread_rng()).unwrap();
+        let mut rng = rand::rng();
 
-        let secret = Scalar::random(&mut rng);
+        let secret = random_scalar(&mut rng);
 
-        let G: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
-        let H: RistrettoPoint = RistrettoPoint::mul_base(&Scalar::random(&mut rng));
+        let G: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
+        let H: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
         assert_ne!(G, H);
 
         let mut hasher = blake3::Hasher::new();

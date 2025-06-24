@@ -1,12 +1,12 @@
-use crate::{
+use blake3::Hasher;
+use common::{
     error::{Error, ErrorKind::CountMismatch},
     polynomial::Polynomial,
+    random::random_scalar,
     utils::batch_decompress_ristretto_points,
 };
-
-use blake3::Hasher;
-use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-use rand_chacha::rand_core::CryptoRngCore;
+use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
+use rand::{CryptoRng, RngCore};
 use rayon::prelude::*;
 use zeroize::Zeroize;
 
@@ -40,11 +40,8 @@ impl Dealer {
         }
     }
 
-    pub(crate) fn generate_commitments(&mut self, f: &Polynomial) -> Vec<CompressedRistretto> {
-        f.coefficients
-            .par_iter()
-            .map(|coef| (self.H * coef).compress())
-            .collect()
+    pub(crate) fn generate_commitments(&self, f: &Polynomial) -> Vec<CompressedRistretto> {
+        f.mul_with_point_compress(&self.H)
     }
 
     /// Proof of correct construction of encrypted shares
@@ -57,9 +54,9 @@ impl Dealer {
         buf: &mut [u8; 64],
     ) -> (Scalar, Vec<Scalar>)
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
-        let randomizer_vals: Vec<Scalar> = (0..self.n).map(|_| Scalar::random(rng)).collect();
+        let randomizer_vals: Vec<Scalar> = (0..self.n).map(|_| random_scalar(rng)).collect();
 
         let flat: Vec<u8> = evals
             // gen_eval_str
@@ -112,7 +109,7 @@ impl Dealer {
         Vec<CompressedRistretto>,
     )
     where
-        R: CryptoRngCore + ?Sized,
+        R: CryptoRng + RngCore,
     {
         let f = Polynomial::sample_set_f0(self.t, rng, &secret);
         self.secret = Some(secret);
@@ -120,10 +117,15 @@ impl Dealer {
         let commitments = self.generate_commitments(&f);
 
         // eval [1..n+1], eval_i * pk_i
-        let (evals, enc_evals) = f.evaluate_multiply(&self.public_keys);
+        let (evals, enc_evals) = f.evaluate_multiply(&self.public_keys, 1);
 
-        let (c, r_vals) = self.dleq_pol(&evals, &enc_evals, hasher, rng, buf);
+        let compressed_enc_evals = enc_evals
+            .par_iter()
+            .map(|enc_eval| enc_eval.compress())
+            .collect();
 
-        (enc_evals, (c, r_vals), commitments)
+        let (c, r_vals) = self.dleq_pol(&evals, &compressed_enc_evals, hasher, rng, buf);
+
+        (compressed_enc_evals, (c, r_vals), commitments)
     }
 }

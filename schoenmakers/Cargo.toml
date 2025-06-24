@@ -9,10 +9,11 @@ license = {workspace = true}
 curve25519-dalek = {workspace = true}
 error-chain = {workspace = true}
 rand = {workspace = true}
-rand_chacha = {workspace = true}
 rayon = {workspace = true}
 zeroize = {workspace = true}
 num-bigint = "0.4.6"
+
+common = {path = "../common"}
 
 [target.'cfg(all(target_arch = "aarch64"))'.dependencies]
 blake3 = {version = "1.8.2", features = ["neon", "rayon", "zeroize", "traits-preview"]}
