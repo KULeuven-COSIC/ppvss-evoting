@@ -2,7 +2,7 @@ use common::{
     error::{Error, ErrorKind::InvalidPararmeterSet},
     random::random_scalar,
 };
-use curve25519_dalek::{RistrettoPoint, Scalar};
+use curve25519_dalek::RistrettoPoint;
 use pi_s_ppvss::party::Party;
 use rand::{CryptoRng, RngCore};
 

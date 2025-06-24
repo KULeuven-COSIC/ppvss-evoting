@@ -1,5 +1,4 @@
 use common::{
-    error::ErrorKind::PointDecompressionError,
     random::{random_point, random_scalar},
     utils::precompute_lambda,
 };

@@ -1,8 +1,9 @@
-use common::random::{random_point, random_scalar};
+use common::{
+    random::{random_point, random_scalar},
+    utils::precompute_lambda,
+};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use pi_s_ppvss::{dealer::Dealer, party::generate_parties};
-
-use common::utils::precompute_lambda;
 
 fn main() {
     const N: usize = 33;

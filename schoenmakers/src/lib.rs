@@ -4,11 +4,10 @@ pub mod utils;
 
 #[cfg(test)]
 mod tests {
-    use common::random::random_scalar;
+    use common::{random::random_scalar, utils::precompute_lambda};
     use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
 
     use crate::{dealer::Dealer, party::generate_parties};
-    use common::utils::precompute_lambda;
 
     #[test]
     fn end_to_end() {

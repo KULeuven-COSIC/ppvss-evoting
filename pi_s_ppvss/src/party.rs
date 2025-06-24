@@ -4,12 +4,14 @@ use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
 use rand::{CryptoRng, RngCore};
 use zeroize::Zeroize;
 
-use common::{random::random_scalar, error::{
-    Error,
-    ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
-}, 
-polynomial::Polynomial,
-utils::{batch_decompress_ristretto_points},
+use common::{
+    error::{
+        Error,
+        ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
+    }, 
+    polynomial::Polynomial,
+    random::random_scalar, 
+    utils::{batch_decompress_ristretto_points},
 };
 
 use crate::{

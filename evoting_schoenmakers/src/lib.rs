@@ -5,11 +5,9 @@ pub mod voter;
 #[cfg(test)]
 mod test {
     use crate::{bulletin_board::BulletinBoard, tallier::Tallier, voter::Voter};
-    use common::random::random_point;
-    use common::utils::precompute_lambda;
+    use common::{random::random_point, utils::precompute_lambda};
     use curve25519_dalek::{RistrettoPoint, Scalar, ristretto::CompressedRistretto};
     use rayon::prelude::*;
-    use zeroize::Zeroize;
 
     #[test]
     fn test_verif() {

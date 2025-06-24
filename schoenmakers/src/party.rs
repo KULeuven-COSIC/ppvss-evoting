@@ -1,10 +1,12 @@
 use blake3::Hasher;
 use curve25519_dalek::{ristretto::CompressedRistretto, RistrettoPoint, Scalar};
-use common::{random::random_scalar, utils::batch_decompress_ristretto_points,
+use common::{
     error::{
         Error,
         ErrorKind::{CountMismatch, InvalidPararmeterSet, InvalidProof, UninitializedValue},
     },
+    random::random_scalar,
+    utils::batch_decompress_ristretto_points,
 };
 use rand::{CryptoRng, RngCore};
 use zeroize::Zeroize;
