@@ -1,5 +1,4 @@
 use common::{
-    error::ErrorKind::PointDecompressionError,
     random::{random_point, random_scalar},
     utils::precompute_lambda,
 };
@@ -272,28 +271,6 @@ fn cast_ballot(c: &mut Criterion) {
             },
         );
     }
-}
-
-fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = rand::rng();
-    let x = random_scalar(&mut rng);
-
-    let gx = RistrettoPoint::mul_base(&x);
-    let gx_compressed = gx.compress();
-
-    c.bench_function("Basepoint Multiplication", |b| {
-        b.iter(|| RistrettoPoint::mul_base(&x))
-    });
-    c.bench_function("Point Compression", |b| b.iter(|| gx.compress()));
-    c.bench_function("Point Decompression", |b| {
-        b.iter(|| gx_compressed.decompress().unwrap())
-    });
-    c.bench_function("Point Decompression Handled", |b| {
-        b.iter(|| match gx_compressed.decompress() {
-            Some(point) => Ok(point),
-            None => Err(PointDecompressionError),
-        })
-    });
 }
 
 // criterion_group!(benches, cast_ballot, ballot_verification, tallying);

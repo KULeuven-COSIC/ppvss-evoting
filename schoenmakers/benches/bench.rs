@@ -1,6 +1,4 @@
-use common::{
-    error::ErrorKind::PointDecompressionError, random::random_scalar, utils::precompute_lambda,
-};
+use common::{random::random_scalar, utils::precompute_lambda};
 use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto};
 use schoenmakers::{dealer::Dealer, party::generate_parties};
@@ -240,28 +238,5 @@ fn pvss(c: &mut Criterion) {
 //     }
 // }
 
-fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = rand::rng();
-    let x = random_scalar(&mut rng);
-
-    let gx = RistrettoPoint::mul_base(&x);
-    let gx_compressed = gx.compress();
-
-    c.bench_function("Basepoint Multiplication", |b| {
-        b.iter(|| RistrettoPoint::mul_base(&x))
-    });
-    c.bench_function("Point Compression", |b| b.iter(|| gx.compress()));
-    c.bench_function("Point Decompression", |b| {
-        b.iter(|| gx_compressed.decompress().unwrap())
-    });
-    c.bench_function("Point Decompression Handled", |b| {
-        b.iter(|| match gx_compressed.decompress() {
-            Some(point) => Ok(point),
-            None => Err(PointDecompressionError),
-        })
-    });
-}
-
-// criterion_group!(benches, pvss, ristretto_point_bench,);
-criterion_group!(benches, pvss,);
+criterion_group!(benches, pvss);
 criterion_main!(benches);

@@ -1,4 +1,3 @@
-use blake3::Hasher;
 use common::{
     error::ErrorKind::PointDecompressionError,
     random::{random_point, random_scalar},
@@ -8,9 +7,7 @@ use criterion::{BatchSize, Criterion, criterion_group, criterion_main};
 use curve25519_dalek::{RistrettoPoint, ristretto::CompressedRistretto, scalar::Scalar};
 use evoting_pi_s_ppvss::{bulletin_board::BulletinBoard, tallier::Tallier, voter::Voter};
 use pi_s_ppvss::party::generate_parties;
-use rand::RngCore;
 use rayon::prelude::*;
-use zeroize::Zeroize;
 
 // const PARAMSET: [(usize, usize, usize); 4] =
 // [(128, 9, 4), (128, 17, 8), (256, 256, 127), (512, 512, 255)];
@@ -315,47 +312,8 @@ fn ristretto_point_bench(c: &mut Criterion) {
     });
 }
 
-fn hasher_bench(c: &mut Criterion) {
-    c.bench_function("Buf Zeroize", |b| {
-        b.iter_batched(
-            || {
-                let mut rng = rand::rng();
-                let mut buf: [u8; 64] = [0u8; 64];
-                rng.fill_bytes(&mut buf);
-                buf
-            },
-            |mut buf| {
-                buf.zeroize();
-            },
-            BatchSize::PerIteration,
-        )
-    });
-    c.bench_function("Hasher Reset", |b| {
-        b.iter_batched(
-            || {
-                let mut rng = rand::rng();
-                let mut buf: [u8; 64] = [0u8; 64];
-                rng.fill_bytes(&mut buf);
-                let mut hasher = Hasher::new();
-                hasher.update(&buf);
-                hasher.update(&buf);
-                hasher.update(&buf);
-                hasher.update(&buf);
-                hasher.update(&buf);
-                hasher
-            },
-            |mut hasher| {
-                hasher.reset();
-            },
-            BatchSize::PerIteration,
-        )
-    });
-    c.bench_function("Hasher Reset", |b| b.iter(|| Hasher::new()));
-}
-
 criterion_group!(benches, cast_ballot, ballot_verification, tallying);
 // criterion_group!(benches, cast_ballot, ballot_verification);
 // criterion_group!(benches, tallying);
-// criterion_group!(benches, ristretto_point_bench);
-// criterion_group!(benches, hasher_bench);
+
 criterion_main!(benches);

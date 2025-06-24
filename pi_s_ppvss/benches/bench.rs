@@ -168,30 +168,5 @@ fn pvss(c: &mut Criterion) {
     }
 }
 
-fn ristretto_point_bench(c: &mut Criterion) {
-    let mut rng = rand::rng();
-    let x = random_scalar(&mut rng);
-    let G: RistrettoPoint = RistrettoPoint::mul_base(&random_scalar(&mut rng));
-
-    let gx = G * x;
-    let gx_compressed = gx.compress();
-
-    c.bench_function("Basepoint Multiplication", |b| {
-        b.iter(|| RistrettoPoint::mul_base(&x))
-    });
-
-    c.bench_function("Random Point Multiplication", |b| b.iter(|| G * x));
-    c.bench_function("Point Compression", |b| b.iter(|| gx.compress()));
-    c.bench_function("Point Decompression", |b| {
-        b.iter(|| gx_compressed.decompress().unwrap())
-    });
-    c.bench_function("Point Decompression Handled", |b| {
-        b.iter(|| match gx_compressed.decompress() {
-            Some(point) => Ok(point),
-            None => Err(PointDecompressionError),
-        })
-    });
-}
-
-criterion_group!(benches, pvss, ristretto_point_bench,);
+criterion_group!(benches, pvss);
 criterion_main!(benches);
